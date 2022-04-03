@@ -1,0 +1,15 @@
+
+    {
+        "account": "goldmandgame",
+        "authorization": [
+            {
+                "actor": "viralclover1",
+                "permission": "owner"
+            }
+        ],
+        "data": {
+            "miner": "viralclover1"
+        },
+        "hex_data": "10aeda34a268aedb",
+        "name": "mine"
+    }

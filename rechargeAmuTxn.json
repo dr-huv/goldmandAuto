@@ -1,0 +1,15 @@
+  {
+    "account": "goldmandgame",
+    "name": "rechargeamu",
+    "authorization": [
+      {
+        "actor": "viralclover1",
+        "permission": "owner"
+      }
+    ],
+    "data": {
+      "miner": "viralclover1",
+      "asset_id": "1099685713905",
+      "durability": 48
+    }
+  }

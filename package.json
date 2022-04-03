@@ -1,0 +1,17 @@
+{
+  "name": "shardunpack",
+  "version": "1.0.0",
+  "description": "stonks",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "TheViralClovers",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.26.1",
+    "eosjs": "^22.0.0",
+    "node-fetch": "^2.6.1",
+    "util": "^0.12.4"
+  }
+}
