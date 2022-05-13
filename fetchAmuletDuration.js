@@ -4,11 +4,12 @@ const { JsSignatureProvider } = require("eosjs/dist/eosjs-jssig"); // developmen
 const fetch = require("node-fetch"); //node only
 const { TextDecoder, TextEncoder } = require("util"); //node only
 const fs = require("fs");
-
+const endpoints = require("./endpoints.json");
 const { hexToUint8Array } = require("eosjs/dist/eosjs-serialize");
 
-rawData = fs.readFileSync("./rechargeAmuTxn.json");
-trx = JSON.parse(rawData);
+// rawData = fs.readFileSync("./rechargeAmuTxn.json");
+// trx = JSON.parse(rawData);
+var amuRechargeTxn = require("./rechargeAmuTxn.json");
 
 const privateKey = require("./priv_keys.json");
 
@@ -28,9 +29,10 @@ const rechargeAmulet = async () => {
     textEncoder: new TextEncoder(),
   });
   try {
+
     const transaction = await api.transact(
       {
-        actions: [trx],
+        actions: amuRechargeTxn,
       },
       {
         blocksBehind: 3,
@@ -44,8 +46,6 @@ const rechargeAmulet = async () => {
   }
 };
 
-
-const req_url = "https://api.waxsweden.org/v1/chain/get_table_rows";
 const payload = {
   json: true,
   code: "goldmandgame",
@@ -60,15 +60,36 @@ const payload = {
 };
 
 const getAmuletDuration = async () => {
+  let req_url =endpoints[index > endpoints.length - 1 ? (index = 0) : index] +"/v1/chain/get_table_rows";
+  
   try {
-    const resp = await axios
-      .post(req_url, payload)
+    const resp = await axios.post(req_url, payload)
     return resp
+
   } catch (err) {
     console.log(err.toJSON())
+    index += 1
+    return getAmuletDuration()
   }
 }
 
+const fetchInventory = async () => {
+  amuletData = [];
+  resp = await getAmuletDuration();
+  for (var i = 0; i < resp.data.rows.length; i++) {
+    if (resp.data.rows[i].amulet_asset_id) {
+      amuletData.push({
+        ...amuRechargeTxn,
+        data: {
+          ...amuRechargeTxn.data,
+          asset_id: resp.data.rows[i].amulet_asset_id,
+          durability: 100 - resp.data.rows[i].durability,
+        },
+      });
+    }
+  }
+  return amuletData;
+};
 // const testTrx = {
 //   max_net_usage_words: 0,
 //   max_cpu_usage_ms: 0,
@@ -92,15 +113,29 @@ const getAmuletDuration = async () => {
 // }
 
 const doRecharge = async () => {
-  getAmuletDuration().then((res) => {
-    if (res.data.rows[0].durability < 70) {
-      trx.data.durability = 100 - res.data.rows[0].durability;
-      rechargeAmulet();
+  amuRechargeTxn = await fetchInventory();
+  var rechargeFlag = 0
+  for (i = 0; i < amuRechargeTxn.length; i++){
+    if (amuRechargeTxn[i].data.durability > 50) {
+      rechargeFlag=1
     }
-    else {
-      console.log(100 - res.data.rows[0].durability);
-    }
-  })
+  }
+  if (rechargeFlag) {
+    rechargeAmulet()
+    console.log("im going in")
+  }
+  else {
+    console.log(amuRechargeTxn[0].data.durability)
+  }
+  // getAmuletDuration().then((res) => {
+  //   if (res.data.rows[0].durability < 70) {
+      
+  //     rechargeAmulet();
+  //   }
+  //   else {
+  //     console.log(100 - res.data.rows[0].durability);
+  //   }
+  // })
 }
 
 module.exports = doRecharge

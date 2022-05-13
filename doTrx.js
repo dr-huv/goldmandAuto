@@ -28,6 +28,7 @@ const doTrx = async () => {
     textDecoder: new TextDecoder(),
     textEncoder: new TextEncoder(),
   });
+  
   try {
     const transaction = await api.transact(
       {
@@ -38,10 +39,18 @@ const doTrx = async () => {
         expireSeconds: 30,
       }
     );
-    console.log(transaction["processed"]["action_traces"][0]["inline_traces"][1]["act"]["data"]["reward"]);
-    console.log(transaction["processed"]["action_traces"][0]["inline_traces"][1]["act"]["data"]["reward_gmd"]);
+    traces = transaction["processed"]["action_traces"][0]["inline_traces"];
+    if (traces.length == 3) {
+       console.log(traces[2]["act"]["data"]["reward"]);
+       console.log(traces[2]["act"]["data"]["reward_gmd"]);
+    }
+    if (traces.length == 2) {
+      console.log(traces[1]["act"]["data"]["reward"]);
+      console.log(traces[1]["act"]["data"]["reward_gmd"]);
+    }
+   
     checkMine().then((res) => {
-      if ((Date.now() / 1000 - res.data.rows[0].last_mine) > 4050) {
+      if ((Date.now() / 1000 - res.data.rows[0].last_mine) > 5850) {
         index += 1;
         console.log("changing endpoint")
         doTrx()
@@ -49,12 +58,20 @@ const doTrx = async () => {
     }
     );
   } catch (err) {
-    if (err.json.error.code == 3050003) {
-      console.log("wtf")
+    if (JSON.stringify(err).includes("ERROR_SET_INVENTORY_NOT_POSSIBLE")) {
+      console.log("yea this one's on me")
+      checkMine().then((res) => {
+        time_left = 5850 - (Date.now() / 1000 - res.data.rows[0].last_mine);
+        console.log(`Will mine after ${time_left} seconds hi`);
+        delay(time_left * 1000).then(() => {
+          console.log("oh no this happened");
+          doTrx()
+        });
+      });
     } else {
-        index += 1;
-        doTrx();
-      }
+      index+=1
+      doTrx()
+    }
     }
   }
 
