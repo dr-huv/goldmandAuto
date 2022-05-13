@@ -1,6 +1,8 @@
 const axios = require("axios");
+const endpoints = require("./endpoints.json");
 
-url = "https://wax.dapplica.io/v1/chain/get_table_rows"
+let index = 0
+
 payload = {
   json: true,
   code: "goldmandgame",
@@ -15,12 +17,15 @@ payload = {
 };
 
 const checkMine = async () => {
+  let req_url = endpoints[index > endpoints.length - 1 ? (index = 0) : index] +"/v1/chain/get_table_rows";
 	try {
-		const resp = await axios.post(url, payload)
+		const resp = await axios.post(req_url, payload)
 		return resp
 	}
 	catch (err) {
-		console.log(err)
+    console.log(err)
+    index += 1
+    return checkMine()
 	}
 }
 
