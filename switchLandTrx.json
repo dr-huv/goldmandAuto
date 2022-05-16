@@ -1,0 +1,14 @@
+{
+    "account": "goldmandgame",
+    "name": "setland",
+    "authorization": [
+    	{
+        "actor": "viralclover1",
+        "permission": "owner"
+    	}
+    ],
+    "data": {
+      "miner": "viralclover1",
+      "land": "1099732738390"
+    }
+}

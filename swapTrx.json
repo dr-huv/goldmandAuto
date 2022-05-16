@@ -1,0 +1,17 @@
+
+  {
+    "account": "goldmandswap",
+    "name": "swap",
+    "authorization": [
+      {
+        "actor": "viralclover1",
+        "permission": "owner"
+      }
+    ],
+    "data": {
+      "miner": "viralclover1",
+      "sell_amount": "1.0000 GME",
+      "buy_amount": "0.9608 GMF"
+    }
+  }
+
