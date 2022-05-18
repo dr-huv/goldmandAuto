@@ -6,19 +6,14 @@ const { TextDecoder, TextEncoder } = require("util"); //node only
 const fs = require("fs");
 const endpoints = require("./endpoints.json");
 const { hexToUint8Array } = require("eosjs/dist/eosjs-serialize");
-
-// rawData = fs.readFileSync("./rechargeAmuTxn.json");
-// trx = JSON.parse(rawData);
 var amuRechargeTxn = require("./rechargeAmuTxn.json");
-
 const privateKey = require("./priv_keys.json");
-
 const endPointObj = require("./endpoints.json");
+
 let index = 0;
 
 const rechargeAmulet = async () => {
-  const httpEndpoint =
-    endPointObj[index > endPointObj.length - 1 ? (index = 0) : index];
+  const httpEndpoint = endPointObj[index > endPointObj.length - 1 ? (index = 0) : index];
   const signatureProvider = new JsSignatureProvider(privateKey);
 
   const rpc = new JsonRpc(httpEndpoint, { fetch });
@@ -116,7 +111,7 @@ const doRecharge = async () => {
   amuRechargeTxn = await fetchInventory();
   var rechargeFlag = 0
   for (i = 0; i < amuRechargeTxn.length; i++){
-    if (amuRechargeTxn[i].data.durability > 50) {
+    if (amuRechargeTxn[i].data.durability > 40) {
       rechargeFlag=1
     }
   }
@@ -127,15 +122,6 @@ const doRecharge = async () => {
   else {
     console.log(amuRechargeTxn[0].data.durability)
   }
-  // getAmuletDuration().then((res) => {
-  //   if (res.data.rows[0].durability < 70) {
-      
-  //     rechargeAmulet();
-  //   }
-  //   else {
-  //     console.log(100 - res.data.rows[0].durability);
-  //   }
-  // })
 }
 
-module.exports = doRecharge
+doRecharge()
