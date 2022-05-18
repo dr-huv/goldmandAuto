@@ -1,6 +1,6 @@
 const transact = require("./doTrx.js")
 const setRandomInterval = require("./randomInterval.js")
-const rechargeAmulet = require("./executRecharge.js")
+const rechargeAmulet = require("./executeRecharge.js")
 const checkMine = require("./lastMinedCheck")
 // const fetchRegenMode = require("./regenModeCheck")
 const swapMR = require("./autoSwapMR")
