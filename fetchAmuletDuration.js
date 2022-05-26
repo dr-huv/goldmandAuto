@@ -78,7 +78,7 @@ const fetchInventory = async () => {
         data: {
           ...amuRechargeTxn.data,
           asset_id: resp.data.rows[i].amulet_asset_id,
-          durability: 100 - resp.data.rows[i].durability,
+          durability: resp.data.rows[i].max_durability - resp.data.rows[i].durability,
         },
       });
     }
