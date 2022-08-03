@@ -61,7 +61,7 @@ const doTrx = async () => {
     if (JSON.stringify(err).includes("ERROR_SET_INVENTORY_NOT_POSSIBLE")) {
       console.log("yea this one's on me")
       checkMine().then((res) => {
-        time_left = 5850 - (Date.now() / 1000 - res.data.rows[0].last_mine);
+        time_left = - (Date.now() / 1000 - res.data.rows[0].last_mine);
         console.log(`Will mine after ${time_left} seconds hi`);
         delay(time_left * 1000).then(() => {
           console.log("oh no this happened");
