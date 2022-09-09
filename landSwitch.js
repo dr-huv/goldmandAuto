@@ -26,30 +26,31 @@ let landPayload = {
 };
 
 const playerPayload = {
-	"json": true,
-	"code": "goldmandgame",
-	"scope": "goldmandgame",
-	"table": "miners",
-	"lower_bound": "viralclover1",
-	"upper_bound": "viralclover1",
-	"index_position": 1,
-	"key_type": "",
-	"limit": "100",
-	"reverse": false,
-	"show_payer": false
-}
+  json: true,
+  code: "goldmandgame",
+  scope: "goldmandgame",
+  table: "miners",
+  lower_bound: "viralclover1",
+  upper_bound: "viralclover1",
+  index_position: 1,
+  key_type: "",
+  limit: "100",
+  reverse: false,
+  show_payer: false,
+};
 
 const switchLand = async () => {
-	const httpEndpoint =endPointObj[index > endPointObj.length - 1 ? (index = 0) : index];
-    const signatureProvider = new JsSignatureProvider(privateKey);
+  const httpEndpoint =
+    endPointObj[index > endPointObj.length - 1 ? (index = 0) : index];
+  const signatureProvider = new JsSignatureProvider(privateKey);
 
-    const rpc = new JsonRpc(httpEndpoint, { fetch });
-    const api = new Api({
-      rpc,
-      signatureProvider,
-      textDecoder: new TextDecoder(),
-      textEncoder: new TextEncoder(),
-    });
+  const rpc = new JsonRpc(httpEndpoint, { fetch });
+  const api = new Api({
+    rpc,
+    signatureProvider,
+    textDecoder: new TextDecoder(),
+    textEncoder: new TextEncoder(),
+  });
   try {
     const transaction = await api.transact(
       {
@@ -62,26 +63,40 @@ const switchLand = async () => {
     );
     console.log(transaction);
   } catch (err) {
-    if (JSON.stringify(err).includes("assertion failure with message: ERROR_LAND_NOT_CHANGED")) {
+    if (
+      JSON.stringify(err).includes(
+        "assertion failure with message: ERROR_LAND_NOT_CHANGED"
+      )
+    ) {
       // console.log(err);
-      console.log("already changed")
+      console.log("already changed");
     } else {
       console.log(err);
       index += 1;
       switchLand();
     }
   }
-}
+};
 
-const checkCurrentLand = async() => {
-	const rawPlayerData = await fetchPostData(playerPayload)
-	const land_id = rawPlayerData.data.rows[0].land
-	// console.log(land_id)
-	// const req_url = "https://wax.api.atomicassets.io/atomicassets/v1/assets/"+land_id
-	const rawLandData = await fetchPostData({...landPayload,lower_bound:land_id,upper_bound:land_id,key_type:"",index_position:1});
-	return [rawLandData.data.rows[0].cap_available,rawLandData.data.rows[0].commission,land_id]
-	// console.log("odd");
-}
+const checkCurrentLand = async () => {
+  const rawPlayerData = await fetchPostData(playerPayload);
+  const land_id = rawPlayerData.data.rows[0].land;
+  // console.log(land_id)
+  // const req_url = "https://wax.api.atomicassets.io/atomicassets/v1/assets/"+land_id
+  const rawLandData = await fetchPostData({
+    ...landPayload,
+    lower_bound: land_id,
+    upper_bound: land_id,
+    key_type: "",
+    index_position: 1,
+  });
+  return [
+    rawLandData.data.rows[0].cap_available,
+    rawLandData.data.rows[0].commission,
+    land_id,
+  ];
+  // console.log("odd");
+};
 
 const fetchOptimalLand = async () => {
   req_land_list = [];
@@ -92,9 +107,9 @@ const fetchOptimalLand = async () => {
     if (
       landData[i].planet_id == 3 &&
       landData[i].weight == 25 &&
-    //   landData[i].commission == 0 &&
-	  landData[i].cap_available>200 &&
-	  !landData[i].unstake_time	
+      //   landData[i].commission == 0 &&
+      landData[i].cap_available > 200 &&
+      !landData[i].unstake_time
     ) {
       req_land_list.push(landData[i]);
       // console.log(
@@ -103,20 +118,20 @@ const fetchOptimalLand = async () => {
     }
   }
   req_land_list = _.orderBy(req_land_list, "commission", "asc");
-  return [req_land_list[0].asset_id,req_land_list[0].commission];
+  return [req_land_list[0].asset_id, req_land_list[0].commission];
   // console.log();
   // console.log(req_land_list.length)
 };
-	
+
 // fetchOptimalLand().then((resp) => console.log(resp));
 
 const landSwitchCheck = async () => {
-	optimalLand = await fetchOptimalLand()
-  current_land = await checkCurrentLand()
-  mein_land = await meinLandCheck()
+  optimalLand = await fetchOptimalLand();
+  current_land = await checkCurrentLand();
+  mein_land = await meinLandCheck();
 
   if (!mein_land) {
-    console.log("mein land has dried up :)")
+    console.log("mein land has dried up :)");
     if (!current_land[0] || optimalLand[1] < current_land[1]) {
       switchLandTrx = {
         ...switchLandTrx,
@@ -128,8 +143,6 @@ const landSwitchCheck = async () => {
       console.log(optimalLand);
       console.log("We can do better");
       switchLand();
-    } else {
-      console.log("The real optimal land is the friends we make along the way");
     }
   } else if (current_land[2] != 1099732772168) {
     console.log("Why pursue other lands, when mein land is right ere");
@@ -141,23 +154,22 @@ const landSwitchCheck = async () => {
       },
     };
     switchLand();
+  } else {
+    console.log(`Remaining land MR: ${current_land[0]/10000}`);
   }
-  }
-  
-	
+};
 
-const meinLandCheck = async() => {
-	const rawLandData = await fetchPostData({
+const meinLandCheck = async () => {
+  const rawLandData = await fetchPostData({
     ...landPayload,
     lower_bound: 1099732772168,
     upper_bound: 1099732772168,
     key_type: "",
     index_position: 1,
   });
-	return rawLandData.data.rows[0].cap_available
-	// console.log("odd");
-}
+  return rawLandData.data.rows[0].cap_available;
+  // console.log("odd");
+};
 
-
-module.exports = landSwitchCheck
+module.exports = landSwitchCheck;
 // checkLandCap().then(res=>console.log(res))
